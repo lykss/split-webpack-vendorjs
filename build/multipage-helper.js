@@ -88,6 +88,9 @@ exports.getProdHtmlWebpackPluginList = function getProdHtmlWebpackPluginList(){
   var moduleList = this.getModuleList()
   //遍历生成模块的HTML模板
   moduleList.forEach(function (mod) {
+    var chunks = mod.moduleID == 'admin' ?
+      ['manifest','vendor','vendor-admin',mod.moduleID] :
+      ['manifest','vendor',mod.moduleID]
     //生成配置
     var conf = {
       filename: mod.moduleID+".html",
@@ -101,8 +104,12 @@ exports.getProdHtmlWebpackPluginList = function getProdHtmlWebpackPluginList(){
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency',
-      chunks: ['manifest','vendor',mod.moduleID]
+      chunksSortMode: function (chunk1, chunk2) {
+        var order1 = chunks.indexOf(chunk1.names[0])
+        var order2 = chunks.indexOf(chunk2.names[0])
+        return order1 - order2
+      },
+      chunks: chunks
     }
     console.log(conf)
     //添加HtmlWebpackPlugin对象
