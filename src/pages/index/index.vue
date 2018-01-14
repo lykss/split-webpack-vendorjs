@@ -1,5 +1,5 @@
 <template>
   <div id="index">
-    首页
+    这里是首页
   </div>
 </template>
